@@ -9,13 +9,16 @@
 [ADpath,~] = fileparts(mfilename('fullpath'));
 
 % Place outputs in /Results
-pathnameOutput = [ADpath '/Results'];
+pathnameOutput = fullfile(ADpath,'Results');
+if not(exist(pathnameOutput,'dir'))
+    mkdir(pathnameOutput);
+end
 
 %% Inputs
 % Use default atlas in this example
-pathnameHeadModel = [ADpath '/HeadModels/MNI152_LowRes'];
+pathnameHeadModel = fullfile(ADpath,'HeadModels','MNI152_LowRes');
 % Use example ROI from paper
-pathnameROI = [ADpath '/HeadModels/MNI152_LowRes/ROIs/ExampleROI_v5_DS_1.txt'];
+pathnameROI = fullfile(ADpath,'HeadModels','MNI152_LowRes','ROIs','ExampleROI_v5_DS_1.txt');
 
 %% Set example user inputs
 AD.inputs.nS = 8;             %number of source optodes
@@ -36,7 +39,7 @@ if isunix %Mac (or Linux?)
     [AD] = ArrayDesignerGRASP_MacLinux(AD,pathnameOutput);
     
     %Save results
-    outname = [pathnameOutput '/' datestr(now,'YYYYmmddHHMMss') '.AD'];
+    outname = fullfile(pathnameOutput,[datestr(now,'YYYYmmddHHMMss') '.AD']);
     save(outname,'-struct','AD');
     
     %Plot full result

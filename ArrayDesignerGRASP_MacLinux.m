@@ -2,13 +2,13 @@ function [AD] = ArrayDesignerGRASP_MacLinux(AD,pathnameOutput)
 
 %Book-keeping
 [ADpath,~] = fileparts(mfilename('fullpath'));
-optLocation = fullfile(ADpath,'/nirsCPPMacLinux/build/nirsmain');
-pathnameScalpPos = [AD.inputs.pathnameHeadModel '/scalpPos.txt'];
-pathnameGMPos = [AD.inputs.pathnameHeadModel '/GMPos.txt'];
-pathnameAvNodalVol = [AD.inputs.pathnameHeadModel '/avNodalVol.txt'];
-pathnamePMDFidx = [AD.inputs.pathnameHeadModel '/PMDFs/PMDFs.idx'];
-pathnamePMDF = [AD.inputs.pathnameHeadModel '/PMDFs/PMDFs.data'];
-pathnameResults = [pathnameOutput '/results.txt'];
+optLocation = fullfile(ADpath,'nirsCPPMacLinux','build','nirsmain');
+pathnameScalpPos = fullfile(AD.inputs.pathnameHeadModel,'scalpPos.txt');
+pathnameGMPos = fullfile(AD.inputs.pathnameHeadModel,'GMPos.txt');
+pathnameAvNodalVol = fullfile(AD.inputs.pathnameHeadModel,'avNodalVol.txt');
+pathnamePMDFidx = fullfile(AD.inputs.pathnameHeadModel,'PMDFs','PMDFs.idx');
+pathnamePMDF = fullfile(AD.inputs.pathnameHeadModel,'PMDFs','PMDFs.data');
+pathnameResults = fullfile(pathnameOutput,'results.txt');
 
 %Calculate PMDF weights (this is system specific and shouldn't change much,
 %so we save a file that is reloaded if already exists.
