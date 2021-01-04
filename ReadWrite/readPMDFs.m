@@ -41,3 +41,6 @@ fseek(fid, nBytes, 'bof'); % skip these bytes from origin
 pos = fread(fid,1,'int32');
 test = fread(fid,1,'double');
 fclose(fid);
+
+
+
