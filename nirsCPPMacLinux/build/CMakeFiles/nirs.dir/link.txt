@@ -1,2 +1,0 @@
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc libnirs.a  CMakeFiles/nirs.dir/src/nirs.cpp.o CMakeFiles/nirs.dir/src/nirsheur.cpp.o CMakeFiles/nirs.dir/src/nirsheur-bipartite.cpp.o CMakeFiles/nirs.dir/src/timer.cpp.o
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib libnirs.a

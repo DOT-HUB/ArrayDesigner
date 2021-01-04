@@ -1,7 +1,8 @@
 function [AD] = ArrayDesignerGRASP_MacLinux(AD,pathnameOutput)
 
 %Book-keeping
-optLocation = '/Users/RCooper/Dropbox/Repositories/ArrayDesigner/nirsCPPMacLinux/build/nirsmain';
+[ADpath,~] = fileparts(mfilename('fullpath'));
+optLocation = fullfile(ADpath,'/nirsCPPMacLinux/build/nirsmain');
 pathnameScalpPos = [AD.inputs.pathnameHeadModel '/scalpPos.txt'];
 pathnameGMPos = [AD.inputs.pathnameHeadModel '/GMPos.txt'];
 pathnameAvNodalVol = [AD.inputs.pathnameHeadModel '/avNodalVol.txt'];
