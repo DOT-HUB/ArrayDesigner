@@ -12,7 +12,7 @@ end
 %Need to figure out how to get regions into the surface mesh as the 4th
 %node dimension. Could make volume mesh first?
 for i = 1:101
-    opt(i).maxnode = 5000;%50000
+    opt(i).maxnode = 5000;%500000
     opt(i).radbound = 1;
     opt(i).maxVol = 1;
     opt(i).downSampling = 0.3;
