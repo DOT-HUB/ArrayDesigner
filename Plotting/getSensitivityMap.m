@@ -1,17 +1,20 @@
 function A = getSensitivityMap(array,posScalp,nS,minRho,maxRho,pathnameHeadModel,pathnameWeights)
 
 %Load PMDF weights
-PMDFweights = load(pathnameWeights);
-
-%Load PMDFs
-PMDFweights = importdata([pathnameHeadModel '/PMDFs/PMDFs.data');
+PMDFweighting = load(pathnameWeights);
 
 nD = length(array)-nS;
 srcs = array(1:nS);
 dets = array(nS+1:end);
+
+%Load PMDFs of the channels of the AD array
+load(fullfile(pathnameHeadModel,'GMSurfaceMesh.mat'));
+ALLPMDFs = readPMDFs(srcs,dets,size(GMSurfaceMesh.node,1),minRho,maxRho,posScalp,pathnameHeadModel);
+
 if ~exist('PMDFweighting','var')
     PMDFweighting = ones(size(ALLPMDFs));
 end
+
 %Add channels to diagram
 for i = 1:nS
     dist = sqrt(sum((posScalp(dets,:) - repmat(posScalp(srcs(i),:),nD,1)).^2,2));

@@ -16,8 +16,10 @@ plotROI(AD.inputs.pathnameHeadModel,AD.inputs.pathnameROI);
 t1 = title('ROI','FontSize',20);
 p1 = get(hAxis1,'Position');
 
-%A = getSensitivityMap([AD.results.source AD.results.detector],scalpPos,AD.inputs.nS,AD.inputs.minRho,AD.inputs.maxRho,AD.inputs.pathnameHeadModel,AD.inputs.pathnameWeights);
-A = [];
+% Load pos scalp
+scalpPos = importdata(fullfile(AD.inputs.pathnameHeadModel,'scalpPos.txt'));
+
+A = getSensitivityMap([AD.results.source AD.results.detector],scalpPos,AD.inputs.nS,AD.inputs.minRho,AD.inputs.maxRho,AD.inputs.pathnameHeadModel,AD.inputs.pathnameWeights);
 
 haxis2 = subplot(1,2,2);
 [hAxis2, viableChannelDists] = plotArray(AD,A);
