@@ -51,7 +51,7 @@ end
 % detector index
 channelsOrd = sortrows(channels);
 
-<<<<<<< HEAD
+
 % Get only PMDFs of selected channels
 allPMDFs = cell(sizeMatrix,sizeMatrix);
 fid = fopen(fullfile(pathnameHeadModel,'PMDFs','PMDFs.data'),'r');
@@ -71,15 +71,3 @@ for iCh = 1:size(channelsOrd,1)
     posVectorPre = posVector+1;
 end
 fclose(fid);    
-=======
-%% Example on how to read specific parts of the .data file
-fid = fopen(fullfile(pathnameLoad,'PMDFs','PMDFs.data'),'r');
-nBytes = nPMDFs(1)*4 + nPMDFs(1)*8; % int32 -> 4 bytes, double -> 8 bytes
-fseek(fid, nBytes, 'bof'); % skip these bytes from origin
-pos = fread(fid,1,'int32');
-test = fread(fid,1,'double');
-fclose(fid);
-
-
-
->>>>>>> 3c92d8cb2b6ca88cb7e10b6eec99cf95b41c4c03
