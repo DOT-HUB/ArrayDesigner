@@ -62,8 +62,8 @@ camlight(viewAng(1)+90,0);
 camlight(viewAng(1)+180,0);
 camlight(viewAng(1)+270,0);
 axis equal;axis off;
-colormap(hAxis,colMap);
-caxis([-0.5 3.5])
+colormap(colMap);
+caxis([0 3])
 colorbar off;
 hold on;
 
@@ -85,8 +85,8 @@ end
 plotmesh(ScalpSurfaceMesh.node,ScalpSurfaceMesh.face,'FaceColor','none','FaceAlpha',0,'EdgeColor','k','EdgeAlpha',0.1);
 
 optodeMarkerSize = 100;
-Hs = scatter3(scalpPos(array(1:nS),1),scalpPos(array(1:nS),2),scalpPos(array(1:nS),3),optodeMarkerSize,'MarkerEdgeColor','k','MarkerFaceColor','r');
-Hd = scatter3(scalpPos(array(nS+1:end),1),scalpPos(array(nS+1:end),2),scalpPos(array(nS+1:end),3),optodeMarkerSize,'MarkerEdgeColor','k','MarkerFaceColor','b');
+Hs = scatter3(scalpPos(array(1:nS),1),scalpPos(array(1:nS),2),scalpPos(array(1:nS),3),70,'MarkerEdgeColor','k','MarkerFaceColor','r');
+Hd = scatter3(scalpPos(array(nS+1:end),1),scalpPos(array(nS+1:end),2),scalpPos(array(nS+1:end),3),70,'MarkerEdgeColor','k','MarkerFaceColor','b');
 view([0 90]);
 hold off;
 

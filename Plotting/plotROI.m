@@ -56,7 +56,8 @@ else
     error('Please specify HeadModel (2nd input)');
 end
 
-load('CMAPgreyGreen.mat')
+colMap(1,:) = [0.7    0.7    0.7];%grey
+colMap(2,:) = [1    0    1];%magenta
 
 % Reorg
 nodes = GMSurfaceMesh.node;
@@ -68,7 +69,7 @@ ROImask(ROI.gmNodeList) = 1;
 
 hAxis = gca;
 hPatch = trisurf(face(:,1:3), nodes(:,1), nodes(:,2), nodes(:,3),ROImask,'EdgeColor',[0.8 0.8 0.8],'EdgeAlpha',1);
-shading('interp');
+shading('flat');
 set(hPatch,'diffusestrength',.7,'specularstrength',.2,'ambientstrength',.2);
 set(hPatch,'Facelighting','phong');
 view(viewAng);
@@ -78,8 +79,8 @@ camlight(viewAng(1)+180,0);
 camlight(viewAng(1)+270,0);
 axis equal;axis off;
 
-colormap(greyGreen);
-caxis([0 1]);
+colormap(hAxis,colMap);
+caxis([-0.5 1.5]);
 colorbar off
 axis off
 view(viewAng);
