@@ -35,6 +35,8 @@ parse(varInputs,varargin{:});
 varInputs = varInputs.Results;
 if isempty(varInputs.hAxes)
     hAxes = gca;
+else
+    hAxes = varInputs.hAxes;
 end
 if isempty(varInputs.view)
     viewAng = [0 90];
@@ -67,8 +69,7 @@ ROImask(ROI.gmNodeList) = 1;
 
 % Plot ############################### 
 
-hAxis = gca;
-hPatch = trisurf(face(:,1:3), nodes(:,1), nodes(:,2), nodes(:,3),ROImask,'EdgeColor',[0.8 0.8 0.8],'EdgeAlpha',1);
+hPatch = trisurf(face(:,1:3), nodes(:,1), nodes(:,2), nodes(:,3),ROImask,'EdgeColor',[0.8 0.8 0.8],'EdgeAlpha',1,'Parent',hAxes);
 shading('flat');
 set(hPatch,'diffusestrength',.7,'specularstrength',.2,'ambientstrength',.2);
 set(hPatch,'Facelighting','phong');
@@ -79,7 +80,7 @@ camlight(viewAng(1)+180,0);
 camlight(viewAng(1)+270,0);
 axis equal;axis off;
 
-colormap(hAxis,colMap);
+colormap(hAxes,colMap);
 caxis([-0.5 1.5]);
 colorbar off
 axis off
