@@ -28,19 +28,32 @@ nS = AD.inputs.nD;
 nD = AD.inputs.nD;
 nodes = GMSurfaceMesh.node;
 face  = GMSurfaceMesh.face;
+ROI = loadROI(AD.inputs.pathnameROI);
 
 if ~exist('A','var')
-    A = zeros(length(nodes),1);
+    AROIoverlap = zeros(length(nodes),1);
 elseif isempty(A)
-    A = zeros(length(nodes),1);
+    AROIoverlap = zeros(length(nodes),1);
+else %create ROI overlap map if A exists
+    colMap(1,:) = [0.7    0.7    0.7];%grey
+    colMap(2,:) = [1 0 1];%magenta - 1 = uncovered ROI
+    colMap(3,:) = [0 1 1];%cyan - 2 = superfluous coverage
+    colMap(4,:) = [0    1    0];%green - 3 = covered ROI
+    Athresh = A>AD.inputs.coverageThresh;
+    ROImat = false(size(Athresh));
+    ROImat(ROI.gmNodeList) = true;
+    AROIoverlap = zeros(size(Athresh));
+    AROIoverlap(ROImat) = 1;
+    AROIoverlap(Athresh) = 2;
+    AROIoverlap(ROImat & Athresh) = 3;
 end
 
-load('CMAPgreyGreen.mat');
+
 
 % Plot ############################### 
 hAxis = gca;
-hPatch = trisurf(face(:,1:3), nodes(:,1), nodes(:,2), nodes(:,3),A,'EdgeColor',[0.8 0.8 0.8],'EdgeAlpha',1);
-shading('interp');
+hPatch = trisurf(face(:,1:3), nodes(:,1), nodes(:,2), nodes(:,3),AROIoverlap,'EdgeColor',[0.8 0.8 0.8],'EdgeAlpha',1);
+shading('flat');
 set(hPatch,'diffusestrength',.7,'specularstrength',.2,'ambientstrength',.2);
 set(hPatch,'Facelighting','phong');
 view(viewAng);
@@ -49,8 +62,8 @@ camlight(viewAng(1)+90,0);
 camlight(viewAng(1)+180,0);
 camlight(viewAng(1)+270,0);
 axis equal;axis off;
-caxis([0 1]);
-colormap(greyGreen);
+colormap(hAxis,colMap);
+caxis([-0.5 3.5])
 colorbar off;
 hold on;
 
@@ -71,8 +84,9 @@ end
 
 plotmesh(ScalpSurfaceMesh.node,ScalpSurfaceMesh.face,'FaceColor','none','FaceAlpha',0,'EdgeColor','k','EdgeAlpha',0.1);
 
-Hs = scatter3(scalpPos(array(1:nS),1),scalpPos(array(1:nS),2),scalpPos(array(1:nS),3),70,'MarkerEdgeColor','k','MarkerFaceColor','r');
-Hd = scatter3(scalpPos(array(nS+1:end),1),scalpPos(array(nS+1:end),2),scalpPos(array(nS+1:end),3),70,'MarkerEdgeColor','k','MarkerFaceColor','b');
+optodeMarkerSize = 100;
+Hs = scatter3(scalpPos(array(1:nS),1),scalpPos(array(1:nS),2),scalpPos(array(1:nS),3),optodeMarkerSize,'MarkerEdgeColor','k','MarkerFaceColor','r');
+Hd = scatter3(scalpPos(array(nS+1:end),1),scalpPos(array(nS+1:end),2),scalpPos(array(nS+1:end),3),optodeMarkerSize,'MarkerEdgeColor','k','MarkerFaceColor','b');
 view([0 90]);
 hold off;
 

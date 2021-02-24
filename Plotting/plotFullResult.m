@@ -11,8 +11,8 @@ AD.inputs.minRho = 15;
 % Plotting ###############################
 f1 = figure('Units','Normalized','Position',[0 0 1 1],'Color','w');
 
-hAxis1 = subplot(1,2,1);
-plotROI(AD.inputs.pathnameHeadModel,AD.inputs.pathnameROI);
+subplot(1,2,1);
+hAxis1 = plotROI(AD.inputs.pathnameHeadModel,AD.inputs.pathnameROI);
 t1 = title('ROI','FontSize',20);
 p1 = get(hAxis1,'Position');
 
@@ -21,7 +21,7 @@ scalpPos = importdata(fullfile(AD.inputs.pathnameHeadModel,'scalpPos.txt'));
 
 A = getSensitivityMap([AD.results.source AD.results.detector],scalpPos,AD.inputs.nS,AD.inputs.minRho,AD.inputs.maxRho,AD.inputs.pathnameHeadModel,AD.inputs.pathnameWeights);
 
-haxis2 = subplot(1,2,2);
+subplot(1,2,2);
 [hAxis2, viableChannelDists] = plotArray(AD,A);
 t2 = title('Array Designer Solution','FontSize',20);
 p2 = get(hAxis2,'Position');
@@ -70,5 +70,12 @@ ylabel('# channels');
 set(hAxis4,'YAxisLocation','right','XTick',[15 30 45]);
 xlim([AD.inputs.minRho AD.inputs.maxRho]);
 
-
+%Add colorbar
+cb = colorbar(hAxis2);
+width = 0.015;
+height = 0.1;
+cb.Position = [0.915, 0.1, width, height];
+cb.Ticks = [1 2 3];
+cb.TickLabels = {'Uncovered','Additional','Covered'};
+cb.FontSize = fSize;
 

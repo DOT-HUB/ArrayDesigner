@@ -1,5 +1,6 @@
 function writeArrayFile(filename,sources,detectors,refpts_10_2p5_label)
 
+%REDUNDANT?
 %Writes out array solution file
 
 %Find 10-2p5 label:
