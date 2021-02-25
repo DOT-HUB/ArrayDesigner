@@ -70,18 +70,16 @@ ROImask(ROI.gmNodeList) = 1;
 % Plot ############################### 
 
 hPatch = trisurf(face(:,1:3), nodes(:,1), nodes(:,2), nodes(:,3),ROImask,'EdgeColor',[0.8 0.8 0.8],'EdgeAlpha',1,'Parent',hAxes);
-shading('flat');
+shading(hAxes,'flat');
 set(hPatch,'diffusestrength',.7,'specularstrength',.2,'ambientstrength',.2);
 set(hPatch,'Facelighting','phong');
-view(viewAng);
-camlight(viewAng(1),viewAng(2));
-camlight(viewAng(1)+90,0);
-camlight(viewAng(1)+180,0);
-camlight(viewAng(1)+270,0);
-axis equal;axis off;
-
+camlight(hAxes,viewAng(1),viewAng(2));
+camlight(hAxes,viewAng(1)+90,0);
+camlight(hAxes,viewAng(1)+180,0);
+camlight(hAxes,viewAng(1)+270,0);
+hAxes.DataAspectRatio = [1 1 1];
 colormap(hAxes,colMap);
-caxis([-0.5 1.5]);
-colorbar off
-axis off
-view(viewAng);
+caxis(hAxes,[-0.5 1.5]);
+view(hAxes,viewAng);
+hAxes.Visible = 'off';
+
