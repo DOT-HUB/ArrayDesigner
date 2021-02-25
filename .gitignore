@@ -1,2 +1,11 @@
 
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+*.DS_Store
+*~.nib
+*.swp
+*~
 HeadModels/MNI152_LowRes/PMDFs/PMDFs.data
+Results
