@@ -57,19 +57,6 @@ tit = ['Channels = ' num2str(length(viableChannelDists))];
 tmpH = text(1,1,tit);
 set(tmpH,'Position',[x y+4*voff 0],'FontSize',fSize);
 
-%Add channel histogram
-hAxis4 = axes;
-width = 0.1;
-height = 0.1;
-set(hAxis4,'position',[0.5-width/2 0.1 width height]);
-axes(hAxis4);
-hh1 = histogram(viableChannelDists,6,'FaceColor',[0 0 1],'binwidth',5);
-axis tight;
-xlabel('SD distance (mm)');
-ylabel('# channels');
-set(hAxis4,'YAxisLocation','right','XTick',[15 30 45]);
-xlim([AD.inputs.minRho AD.inputs.maxRho]);
-
 %Add colorbar
 cb = colorbar(hAxis2);
 width = 0.015;
