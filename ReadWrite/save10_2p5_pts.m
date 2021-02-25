@@ -1,4 +1,5 @@
-% This function computes the 10-2.5 locations on the head surface
+% This function computes the 10-2.5 locations on the head surface and saves
+% them also as scalpPos.txt file
 % 
 % INPUTS: 
 %
@@ -26,6 +27,8 @@
 %                           % logData            :   optional
 %
 %                           % fileName           :   The path of the saved mshs file
+%
+% pathnameHeadModel         : pathname to the head model folder
 %
 %
 % OUTPUTS:
@@ -60,7 +63,7 @@
 %                           % fileName           :   The path of the saved mshs file
 %
 
-function mshs = save10_2p5_pts(mshs)
+function mshs = save10_2p5_pts(mshs,pathnameHeadModel)
 
 % Upsample scalpSurfaceMesh (which should already be at high resolution)
 if ~isfield(mshs,'scalpSurfaceMeshUpsampled')
@@ -917,6 +920,13 @@ mshs.ADSolutionSpace.labels = refpts_10_2p5_label;
 %     hold on;text(refpts_10_2p5(ii,1),refpts_10_2p5(ii,2),refpts_10_2p5(ii,3)+3,num2str(ii));
 % end
 
+% Save as .txt file
+fid = fopen(fullfile(pathnameHeadModel,'scalpPos.txt'),'w');
+for iV = 1:size(refpts_10_2p5,1)
+    fprintf(fid,'%.6f %.6f %.6f \n',refpts_10_2p5(iV,:));
+end
+fclose(fid);  
+
 end
 
 
@@ -1071,6 +1081,6 @@ else
     close(h)
     newnode = newnode(2:end,:);
     newface = newface - 1;
-end
+end 
 
 end

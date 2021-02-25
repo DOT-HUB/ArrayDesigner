@@ -1,11 +1,89 @@
-%Fluence_Preprocessing_10_2p5 CORRECTLY SCALED
-
-%This script loads the TOAST head model fluence distributions and outputs
-%the PMDFs on the GM surface, with the correct (jacobian) scaling.
-
-%SDrange = [0 60];
-%pmdfThresh = 1e-6;
-% Dependencies: iso2mesh
+% This function computes the PMDFs on the GM surface for all possible 10-2.5 combinations
+% within the SDrange and save them as PMDFs.data and PMDFs.idx in the PMDFs folder
+% within the specified head model folder. They are correctly scaled. 
+% It also saves the avNodalVol.txt file in the specified head model folder. 
+% 
+% INPUTS: 
+%
+% mshs                      :  A file containing a structure of:
+%
+%                           % headVolumeMesh     :   The multi-layer volume mesh structure. 
+%                                                    Contains fields: node, face, elem, labels
+%
+%                           % gmSurfaceMesh      :   The gm surface mesh structure. 
+%                                                    Contains fields: node, face.
+%
+%                           % scalpSurfaceMesh   :   The scalp surface mesh structure.
+%                                                    Contains fields: node, face.
+%
+%                           % vol2gm             :   The sparse matrix mapping from head volume mesh
+%                                                    space to GM surface mesh space
+%
+%                           % landmarks          :   A matrix containing the
+%                                                    landmarks coordinate
+%
+%                           % tenFive            :   ten-five locations for
+%                                                    the mesh (.positions
+%                                                    (nx3) and .labels {n})
+%
+%                           % ADSolutionSpace    :   ten-two.five locations for
+%                                                    the mesh (.positions
+%                                                    (nx3) and .labels {n})
+%
+%                           % logData            :   optional
+%
+%                           % fileName           :   The path of the saved mshs file
+%
+% SDrange                 range of distance for meaningful PMDFs (e.g.,[0
+%                         60])
+%
+% pmdfThresh              threhsold to set to 0 smaller values of PMDF
+%                         (e.g., 1e-6)
+%
+% pathnamePhis            pathname to the PMDFs folder
+%
+% OUTPUT:
+%
+% mshs                      :  A file containing a structure of:
+%
+%                           % headVolumeMesh     :   The multi-layer volume mesh structure. 
+%                                                    Contains fields: node, face, elem, labels
+%
+%                           % gmSurfaceMesh      :   The gm surface mesh structure. 
+%                                                    Contains fields: node, face.
+%
+%                           % gmSurfaceMeshDownsampled: The gm surface mesh structure downsampled by a factor of 2.5. 
+%                                                    Contains fields: node, face.
+%
+%                           % scalpSurfaceMesh   :   The scalp surface mesh structure.
+%                                                    Contains fields: node, face.
+%
+%                           % vol2gm             :   The sparse matrix mapping from head volume mesh
+%                                                    space to GM surface mesh space
+%
+%                           % vol2gmDownsampled  :   The sparse matrix mapping from head volume mesh
+%                                                    space to GM downsampled surface mesh space
+%
+%                           % landmarks          :   A matrix containing the
+%                                                    landmarks coordinate
+%
+%                           % tenFive            :   ten-five locations for
+%                                                    the mesh (.positions
+%                                                    (nx3) and .labels {n})
+%
+%                           % ADSolutionSpace    :   ten-two.five locations for
+%                                                    the mesh (.positions
+%                                                    (nx3) and .labels {n})
+%
+%                           % PMDFNormFactor     :   normalization factor
+%                                                    required for the PMDFs weight computation for SNR 
+%
+%                           % logData            :   optional
+%
+%                           % fileName           :   The path of the saved mshs file
+%
+% Dependencies: TOAST, iso2mesh
+%
 
 function [mshs] = computePMDFs(pathnamePhis,mshs,SDrange,pmdfThresh)
 
@@ -19,17 +97,25 @@ for i = 1:length(files)
 end
 clear phis_tmp
 
-posScalp = mshs.ADSolutionSpace;
+posScalp = mshs.ADSolutionSpace.positions;
 nposScalp = size(posScalp,1); % number of scalp lattice points
 
-% Downsample GMSurfaceMesh with a factor of 2.5
+% Downsample GMSurfaceMesh with a factor of 2.5 and save it also as
+% GMpos.txt
 if ~isfield(mshs,'gmSurfaceMeshDownsampled')
     [mshs.gmSurfaceMeshDownsampled.node,mshs.gmSurfaceMeshDownsampled.face] = remeshsurf(mshs.gmSurfaceMesh.node,mshs.gmSurfaceMesh.face,2.5);
+    
+    % Save as GMpos.txt to be fed to the algorithm
+    fid = fopen(fullfile(pathnamePhis(1:end-6),'GMpos.txt'),'w');
+    for iV = 1:size(mshs.gmSurfaceMeshDownsampled.node,1)
+        fprintf(fid,'%.6f %.6f %.6f \n',mshs.gmSurfaceMeshDownsampled.node(iV,1:3));
+    end
+    fclose(fid); 
 end
 
 % Compute new vol2gm matrix and nodal volume vector
 if ~isfield(mshs,'vol2gmDownsampled')
-    [mshs.vol2gmDownsampled,mshs.GMnodalVol] = vol2gmDirectVol(mshs.headVolumeMesh,mshs.gmSurfaceMeshDownsampled.node);
+    [mshs.vol2gmDownsampled,GMnodalVol] = vol2gmDirectVol(mshs.headVolumeMesh,mshs.gmSurfaceMeshDownsampled.node);
 end
 
 % fluence distribution = 1 x nposGM.
@@ -98,6 +184,7 @@ ALLPMDFs = cell(nposScalp,nposScalp);
 noskipmat = ones(nposScalp,nposScalp);
 noskipmat(1:nposScalp+1:end) = 0;
 
+tic;
 h1 = waitbar(0,'Calculating PMDFs...');
 for ii = 1:nposScalp
     waitbar(ii/nposScalp,h1)
@@ -126,6 +213,7 @@ for ii = 1:nposScalp
         end
     end
     
+    t = toc;
     remaining = sum(noskipmat(:));
     done = nposScalp.^2 - remaining;
     
@@ -133,13 +221,12 @@ for ii = 1:nposScalp
 end
 delete(h1);
 
-mshs.AvNodalVolume = median(mshs.GMnodalVol);
 mshs.PMDFnormFactor = PMDFnormFactor;
 
 % Save the PMDFs file in the .data and .idx format
-fid = fopen(fullfile(pathnameSave,'PMDF_indexFile.idx'),'w');
+fid = fopen(fullfile(pathnamePhis,'PMDFs.idx'),'w');
 for iR = 1:size(ALLPMDFs,2)
-    fprintf('%d \n',iR)
+    %fprintf('%d \n',iR)
     for iC = 1:size(ALLPMDFs,1)
         if iC > iR
             if ~isempty(ALLPMDFs{iR,iC})
@@ -154,9 +241,10 @@ for iR = 1:size(ALLPMDFs,2)
 end
 fclose(fid);
 
-fid = fopen(fullfile(pathnameSave,'PMDF_dataFile.data'),'w');
+h1 = waitbar(0,'Saving PMDFs...');
+fid = fopen(fullfile(pathnamePhis,'PMDFs.data'),'w');
 for iR = 1:size(ALLPMDFs,2)
-    fprintf('%d \n',iR)
+    waitbar(iR/size(ALLPMDFs,2),h1)
     for iC = 1:size(ALLPMDFs,1)
         if ~isempty(ALLPMDFs{iR,iC})
             for iG = 1:length(ALLPMDFs{iR,iC})
@@ -169,6 +257,16 @@ for iR = 1:size(ALLPMDFs,2)
     end
 end
 fclose(fid);  
+delete(h1);
+
+% Delete the Phi_Batch files (the fluence files) to save space
+delete(fullfile(pathnamePhis,'Phi_*'))
+
+% Save the avNodalVol.txt file
+avNodalVolume = median(GMnodalVol);
+fid = fopen(fullfile(pathnamePhis(1:end-6),'avNodalVol.txt'),'w');
+fprintf(fid,'%.15d',avNodalVolume);
+close(fid);
 
 end
 

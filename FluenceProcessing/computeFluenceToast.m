@@ -26,6 +26,10 @@
 
 function computeFluenceToast(headVolumeMesh,landmarks,ADSolutionSpace,optProp,pathnameSave)
 
+if ~exist(pathnameSave,'dir')
+    mkdir(pathnameSave)
+end
+
 % Create toast mesh
 eltp = ones(length(headVolumeMesh.elem),1)*3;
 headVolumeMesh.elem(:,1:4) = [headVolumeMesh.elem(:,4), headVolumeMesh.elem(:,1), headVolumeMesh.elem(:,2), headVolumeMesh.elem(:,3)];
@@ -44,8 +48,8 @@ c_medium = c0./ref;
 
 % Create mus and mua vectors
 for i_t = 1:n_tissue
-    mua(headVolumeMesh.node(:,4)==i_t,1) = tissue(i_t).prop(3);
-    mus(headVolumeMesh.node(:,4)==i_t,1) = tissue(i_t).prop(1).*(1-tissue(i_t).prop(2));
+    mua(headVolumeMesh.node(:,4)==i_t,1) = optProp(i_t).prop(3);
+    mus(headVolumeMesh.node(:,4)==i_t,1) = optProp(i_t).prop(1).*(1-optProp(i_t).prop(2));
 end
 
 % Calcualte boundary mismatch factors
@@ -70,17 +74,17 @@ clear K F M
 measpos = landmarks(1,:); % Use Nasion as measpos, this shouldn't matter;
 count = 1;
 batchsize = 100;
-for i = 1:batchsize:size(ADSolutionSpace,1)
+for i = 1:batchsize:size(ADSolutionSpace.positions,1)
     
-    fprintf('Running batch %d of %d\n',count,floor(size(ADSolutionSpace,1)/batchsize));
+    fprintf('Running batch %d of %d\n',count,floor(size(ADSolutionSpace.positions,1)/batchsize));
     
-    if i+batchsize-1>size(ADSolutionSpace,1)
-        finind = size(ADSolutionSpace,1);
+    if i+batchsize-1>size(ADSolutionSpace.positions,1)
+        finind = size(ADSolutionSpace.positions,1);
     else
         finind = i+batchsize-1;
     end
     
-    sourcepos = ADSolutionSpace(i:finind,:);
+    sourcepos = ADSolutionSpace.positions(i:finind,:);
     
     % Get the source vectors, which in toast are also not multiplied by the
     % speed of light.
@@ -91,9 +95,6 @@ for i = 1:batchsize:size(ADSolutionSpace,1)
     phi = S\qvec;
         
     fprintf('Saving batch %d\n',count);
-    if ~exist(pathnameSave,'dir')
-        mkdir(pathnameSave)
-    end
     fname = ['Phi_Batch' num2str(count) '.mat'];
     save(fullfile(pathnameSave,fname),'phi','-v7.3');
     
