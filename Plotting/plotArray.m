@@ -1,4 +1,4 @@
-function [hAxis, viableChannelDists] = plotArray(AD,varargin)
+function [hAxes, viableChannelDists] = plotArray(AD,varargin)
 
 % Manage Inputs ############################### 
 varInputs = inputParser;
@@ -29,6 +29,10 @@ nD = AD.inputs.nD;
 nodes = GMSurfaceMesh.node;
 face  = GMSurfaceMesh.face;
 ROI = loadROI(AD.inputs.pathnameROI);
+sources = AD.results.source;
+detectors = AD.results.detector;
+nChannels = AD.results.nChannels;
+measList = AD.results.measList;
 
 A = AD.results.sensitivityMap;
 if ~exist('A','var')
@@ -49,8 +53,6 @@ else %create ROI overlap map if A exists
     AROIoverlap(ROImat & Athresh) = 3;
 end
 
-
-
 % Plot ############################### 
 hPatch = trisurf(face(:,1:3), nodes(:,1), nodes(:,2), nodes(:,3),AROIoverlap,'EdgeColor',[0.8 0.8 0.8],'EdgeAlpha',1,'Parent',hAxes);
 shading(hAxes,'flat');
@@ -68,37 +70,30 @@ view(hAxes,viewAng);
 hAxes.Visible = 'off';
 hold(hAxes,'on');
 
-nchan = 0;
 %Add channels to diagram
-for i = 1:nS
-    dist = sqrt(sum((scalpPos(array(nS+1:end),:) - repmat(scalpPos(array(i),:),nD,1)).^2,2));
-    for j = 1:length(dist)
-        if dist(j) >= AD.inputs.minRho && dist(j) < AD.inputs.maxRho
-            Hl = line(hAxes,[scalpPos(array(i),1) scalpPos(array(nS+j),1)],[scalpPos(array(i),2) scalpPos(array(nS+j),2)],[scalpPos(array(i),3) scalpPos(array(nS+j),3)],'color','m','LineWidth',2);
-            nchan = nchan+1;
-            viableChannelDists(nchan) = dist(j);
-        end
-    end
+for i = 1:nChannels
+    Hl = line(hAxes,[scalpPos(sources(measList(i,1)),1) scalpPos(detectors(measList(i,2)),1)],[scalpPos(sources(measList(i,1)),2) scalpPos(detectors(measList(i,2)),2)],[scalpPos(sources(measList(i,2)),3) scalpPos(detectors(measList(i,2)),3)],'color','m','LineWidth',2);
 end
 
-hPatch = trisurf(ScalpSurfaceMesh.face(:,1:3), ScalpSurfaceMesh.node(:,1), ScalpSurfaceMesh.node(:,2), ScalpSurfaceMesh.node(:,3),'FaceColor','none','FaceAlpha',0,'EdgeColor','k','EdgeAlpha',0.1,'Parent',hAxes);
+%Add scalp
+hPatch = trisurf(ScalpSurfaceMesh.face(:,1:3), ScalpSurfaceMesh.node(:,1), ScalpSurfaceMesh.node(:,2), ScalpSurfaceMesh.node(:,3),'FaceColor','none','FaceAlpha',0,'EdgeColor','k','EdgeAlpha',0.05,'Parent',hAxes);
 
 optodeMarkerSize = 100;
-Hs = scatter3(hAxes,scalpPos(array(1:nS),1),scalpPos(array(1:nS),2),scalpPos(array(1:nS),3),optodeMarkerSize,'MarkerEdgeColor','k','MarkerFaceColor','r');
-Hd = scatter3(hAxes,scalpPos(array(nS+1:end),1),scalpPos(array(nS+1:end),2),scalpPos(array(nS+1:end),3),optodeMarkerSize,'MarkerEdgeColor','k','MarkerFaceColor','b');
+Hs = scatter3(hAxes,scalpPos(sources,1),scalpPos(sources,2),scalpPos(sources,3),optodeMarkerSize,'MarkerEdgeColor','k','MarkerFaceColor','r');
+Hd = scatter3(hAxes,scalpPos(detectors,1),scalpPos(detectors,2),scalpPos(detectors,3),optodeMarkerSize,'MarkerEdgeColor','k','MarkerFaceColor','b');
 view(hAxes,viewAng);
-hold(hAxes,'on');
+hold(hAxes,'off');
 
+hAxes.XLimMode = 'auto';
+hAxes.YLimMode = 'auto';
+hAxes.ZLimMode = 'auto';
+set(hAxes, 'XLimSpec', 'Tight','YLimSpec','Tight');
 
-% if ~exist('scalpFlag','var');
-%     scalpFlag = 1;
-% end
-% if scalpFlag == 1;
-%     plotmesh(ScalpSurfaceMesh.node,ScalpSurfaceMesh.face,'FaceColor','none','FaceAlpha',0,'EdgeColor','k','EdgeAlpha',0.3);
-% end
-
-%Add ROI centre
-%scatter(roiCent(1),roiCent(2),100,'go','filled');
-%axis equal tight
-%Hleg = legend([Hs Hd Hl],{'Sources','Detectors','Channels'},'FontSize',14);
-%set(Hleg,'Position',[0.8605    0.1564    0.0797    0.0763]);
+%Add colorbar
+cb = colorbar(hAxes);
+width = 0.015;
+height = 0.1;
+cb.Position = [0.860, 0.01, width, height];
+cb.Ticks = [1 2 3];
+cb.TickLabels = {'Uncovered','Additional','Covered'};
+cb.FontSize = 10;

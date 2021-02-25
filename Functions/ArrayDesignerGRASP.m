@@ -1,7 +1,7 @@
-function [AD] = ArrayDesignerGRASP(AD)
+function [AD, readOut] = ArrayDesignerGRASP(AD)
 
 %Book-keeping
-[ADpath,~] = fileparts(mfilename('fullpath'));
+pathnameAD = AD.inputs.pathnameAD;
 pathnameScalpPos = fullfile(AD.inputs.pathnameHeadModel,'scalpPos.txt');
 pathnameGMPos = fullfile(AD.inputs.pathnameHeadModel,'GMPos.txt');
 pathnameAvNodalVol = fullfile(AD.inputs.pathnameHeadModel,'avNodalVol.txt');
@@ -24,32 +24,15 @@ percThresh = 1;                         %Threshold percentage signal change
 coverageThresh = log((100+percThresh)/100)/((activationVol/avNodalVol)*deltaMua);
 AD.inputs.coverageThresh = coverageThresh;
 
-%% Create status box
-% h = figure('Units','Normalized');
-% h.MenuBar = 'none';
-% h.ToolBar = 'none';
-% h.Name = 'Array Designer Status:';
-txtBox = uitextarea;
-hFig = txtBox.Parent;
-txtBox.Position = [5 5 hFig.Position(3)-10 hFig.Position(4)-10];
-drawnow
-
 %% Run GRASP
-statString = {'Running Array Designer GRASP algorithm...'};
-txtBox.Value = statString;
-drawnow
-
 tic
 if isunix
-    optLocation = fullfile(ADpath,'nirsCPPMacLinux','build','nirsmain');
-    [~,b] = system([optLocation ' ' pathnameScalpPos ' ' pathnameGMPos ' ' pathnamePMDFidx ' ' pathnamePMDF ' ' pathnameWeights ' ' AD.inputs.pathnameROI ' ' num2str(AD.inputs.nS) ' ' num2str(AD.inputs.nD) ' ' num2str(AD.inputs.minRhoOpt) ' ' num2str(coverageThresh) ' ' num2str(AD.inputs.coverageWeight) ' ' pathnameResults]);
+    optLocation = fullfile(pathnameAD,'nirsCPPMacLinux','build','nirsmain');
+    [~,readOut] = system([optLocation ' ' pathnameScalpPos ' ' pathnameGMPos ' ' pathnamePMDFidx ' ' pathnamePMDF ' ' pathnameWeights ' ' AD.inputs.pathnameROI ' ' num2str(AD.inputs.nS) ' ' num2str(AD.inputs.nD) ' ' num2str(AD.inputs.minRhoOpt) ' ' num2str(coverageThresh) ' ' num2str(AD.inputs.coverageWeight) ' ' pathnameResults]);
 else
     %windows call
 end
 runtime = toc;
-statString{end+1} = b;
-txtBox.Value = statString;
-drawnow
 
 % Load results are in /tmp/name of ROI
 all = importdata(pathnameResults);
@@ -69,7 +52,26 @@ AD.results.runtime = runtime;
 
 % Load pos scalp
 scalpPos = importdata(fullfile(AD.inputs.pathnameHeadModel,'scalpPos.txt'));
+
 % Calculate Sensitivity
 AD.results.sensitivityMap = getSensitivityMap([AD.results.source AD.results.detector],scalpPos,AD.inputs.nS,AD.inputs.minRho,AD.inputs.maxRho,AD.inputs.pathnameHeadModel,AD.inputs.pathnameWeights);
 
+% Calculate viable channel number and distances
+nchan = 0;
+array = [sources detectors];
+%Add channels to diagram
+for i = 1:AD.inputs.nS
+    dist = sqrt(sum((scalpPos(array(AD.inputs.nS+1:end),:) - repmat(scalpPos(array(i),:),AD.inputs.nD,1)).^2,2));
+    for j = 1:length(dist)
+        if dist(j) >= AD.inputs.minRho && dist(j) < AD.inputs.maxRho
+            nchan = nchan+1;
+            measList(nchan,1) = i;
+            measList(nchan,2) = j;
+            channelDists(nchan) = dist(j);
+        end
+    end
+end
+AD.results.nChannels = length(channelDists);
+AD.results.measList = measList;
+AD.results.channelDists = channelDists;
 
