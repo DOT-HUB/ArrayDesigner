@@ -11,7 +11,7 @@ function hAxis = plotROI(pathnameHeadModel,pathnameROI,varargin)
 % pathnameROI           =   the path to the ROI.txt (which should also be 
 %                           saved within the ROIs folder in the selected 
 %                           HeadModel directoryfile OR the ROI structure
-%                           that is output by loadROI
+%                           that is output by loadROI)
 %
 % viewAng               =   Optional. Viewing angle [a,b] Defaults to [
 
