@@ -52,7 +52,7 @@ if ~isempty(pathnameHeadModel)
     if isstr(pathnameHeadModel)
         load([pathnameHeadModel '/GMSurfaceMesh.mat']);
     else
-    GMSurfaceMesh = pathnameHeadModel;
+        GMSurfaceMesh = pathnameHeadModel;
     end
 else
     error('Please specify HeadModel (2nd input)');
