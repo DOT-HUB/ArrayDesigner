@@ -1,11 +1,7 @@
-function pathnameROI = writeROI(ROI)
+function pathnameROI = writeROI(ROI,pathnameROI)
 
-ROI.gmNodeList;
-ROI.scalpPosList;
-
-pathnameROI = ['test.' 'txt'];
-fid = fopen(outname,'w');
-fprintf(fid,'%s\n',ROI.gmNodeList);
-fprintf(fid,'%s\n',ROI.scalpPosList);
+fid = fopen(pathnameROI,'w');
+fprintf(fid,'%s\n',num2str(ROI.gmNodeList'));
+fprintf(fid,'%s\n',num2str(ROI.solutionSpaceNodeList'));
 fclose(fid);
 
