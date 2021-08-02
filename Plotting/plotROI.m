@@ -1,12 +1,11 @@
-function hAxis = plotROI(pathnameHeadModel,pathnameROI,varargin)
+function hAxis = plotROI(gmSurfaceMesh,pathnameROI,varargin)
 
 %This function plots an Array Designer ROI on the GM surface mesh
 %
 %############################### INPUTS ###################################
 %
-% pathnameHeadModel     =   the path of the HeadModel (contained in
-%                           ArrayDesigner/HeadModels) OR the GMSurfaceMesh
-%                           structure
+% gmSurfaceMesh         =   the gmSurfaceMesh
+%                           structure directly
 %
 % pathnameROI           =   the path to the ROI.txt (which should also be 
 %                           saved within the ROIs folder in the selected 
@@ -48,11 +47,11 @@ elseif isstruct(pathnameROI)
     ROI = pathnameROI;
 end
 
-if ~isempty(pathnameHeadModel)
-    if isstr(pathnameHeadModel)
-        load([pathnameHeadModel '/GMSurfaceMesh.mat']);
+if ~isempty(gmSurfaceMesh)
+    if isstr(gmSurfaceMesh)
+        load(gmSurfaceMesh,'gmSurfaceMesh','-mat');
     else
-        GMSurfaceMesh = pathnameHeadModel;
+        gmSurfaceMesh = gmSurfaceMesh;
     end
 else
     error('Please specify HeadModel (2nd input)');
@@ -62,8 +61,8 @@ colMap(1,:) = [0.7    0.7    0.7];%grey
 colMap(2,:) = [1    0    1];%magenta
 
 % Reorg
-nodes = GMSurfaceMesh.node;
-face  = GMSurfaceMesh.face;
+nodes = gmSurfaceMesh.node;
+face  = gmSurfaceMesh.face;
 ROImask = zeros(length(nodes),1);
 ROImask(ROI.gmNodeList) = 1;
 

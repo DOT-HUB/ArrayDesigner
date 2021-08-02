@@ -1,3 +1,6 @@
+
+function [mshs] = computePMDFs(pathnamePhis,mshs,SDrange,pmdfThresh)
+
 % This function computes the PMDFs on the GM surface for all possible 10-2.5 combinations
 % within the SDrange and save them as PMDFs.data and PMDFs.idx in the PMDFs folder
 % within the specified head model folder. They are correctly scaled. 
@@ -37,7 +40,7 @@
 % SDrange                 range of distance for meaningful PMDFs (e.g.,[0
 %                         60])
 %
-% pmdfThresh              threhsold to set to 0 smaller values of PMDF
+% pmdfThresh              threhsold to set to 0 smaller values of normalized PMDF
 %                         (e.g., 1e-6)
 %
 % pathnamePhis            pathname to the PMDFs folder
@@ -85,7 +88,6 @@
 % Dependencies: TOAST, iso2mesh
 %
 
-function [mshs] = computePMDFs(pathnamePhis,mshs,SDrange,pmdfThresh)
 
 files = dir(fullfile(pathnamePhis,'*.mat'));
 
@@ -307,6 +309,3 @@ delete(h)
 vol2gm = sparse(i,j,s,size(GMNodes,1),size(headVolumeMesh.node,1));
 
 end
-
-
-

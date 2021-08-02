@@ -1,8 +1,10 @@
 function [AD, readOut] = ArrayDesignerGRASP(AD)
 
-%Book-keeping
+%Book-keeping / unpacking for brevity
 pathnameAD = AD.inputs.pathnameAD;
+pathnameROI = AD.inputs.pathnameROI;
 pathnameSolSpace = fullfile(AD.inputs.pathnameHeadModel,'/Utils/scalpSolutionSpace_10_2p5.txt');
+pathnameSolSpaceLabels = fullfile(AD.inputs.pathnameHeadModel,'/Utils/scalpSolutionSpace_10_2p5_labels.txt');
 pathnameGMPos = fullfile(AD.inputs.pathnameHeadModel,'/Utils/gmPos.txt');
 pathnameAvNodalVol = fullfile(AD.inputs.pathnameHeadModel,'/Utils/avNodalVol.txt');
 pathnamePMDFidx = fullfile(AD.inputs.pathnameHeadModel,'PMDFs','PMDFs.idx');
@@ -28,7 +30,7 @@ AD.inputs.coverageThresh = coverageThresh;
 tic
 if isunix
     optLocation = fullfile(pathnameAD,'nirsCPPMacLinux','build','nirsmain');
-    [~,readOut] = system([optLocation ' ' pathnameSolSpace ' ' pathnameGMPos ' ' pathnamePMDFidx ' ' pathnamePMDF ' ' pathnameWeights ' ' AD.inputs.pathnameROI ' ' num2str(AD.inputs.nS) ' ' num2str(AD.inputs.nD) ' ' num2str(AD.inputs.minRhoOpt) ' ' num2str(coverageThresh) ' ' num2str(AD.inputs.coverageWeight) ' ' pathnameResults]);
+    [~,readOut] = system([optLocation ' ' pathnameSolSpace ' ' pathnameGMPos ' ' pathnamePMDFidx ' ' pathnamePMDF ' ' pathnameWeights ' ' pathnameROI ' ' num2str(AD.inputs.nS) ' ' num2str(AD.inputs.nD) ' ' num2str(AD.inputs.minRhoOpt) ' ' num2str(coverageThresh) ' ' num2str(AD.inputs.coverageWeight) ' ' pathnameResults]);
 else
     %windows call
 end
@@ -36,8 +38,8 @@ runtime = toc;
 
 % Load results are in /tmp/name of ROI
 all = importdata(pathnameResults);
-sources = str2num(all.textdata{1}(2:end-1));
-detectors = str2num(all.textdata{2}(2:end-1));
+sources = str2num(all.textdata{1}(2:end-1)) + 1; %These are base 0 out of GRASP and must be amended for matlab
+detectors = str2num(all.textdata{2}(2:end-1)) + 1;
 signal = all.data(1,:);
 signalFrac = all.data(2,:);
 coverage = all.data(3,:);
@@ -50,8 +52,8 @@ AD.results.signalPerc= signalFrac*100;
 AD.results.coveragePerc = coverageFrac*100;
 AD.results.runtime = runtime;
 
-% Load pos scalp
-solutionSpace = importdata(fullfile(AD.inputs.pathnameHeadModel,'scalpPos.txt'));
+% Load scalp solution space points
+solutionSpace = importdata(pathnameSolSpace);
 
 % Calculate Sensitivity
 AD.results.sensitivityMap = getSensitivityMap([AD.results.source AD.results.detector],solutionSpace,AD.inputs.nS,AD.inputs.minRho,AD.inputs.maxRho,AD.inputs.pathnameHeadModel,AD.inputs.pathnameWeights);
@@ -74,4 +76,11 @@ end
 AD.results.nChannels = length(channelDists);
 AD.results.measList = measList;
 AD.results.channelDists = channelDists;
+
+%Include in results the label of each selected position
+refpts_10_2p5_labels = textread(pathnameSolSpaceLabels,'%s');
+AD.results.detectorLabels = refpts_10_2p5_labels(AD.results.detector);
+AD.results.sourceLabels = refpts_10_2p5_labels(AD.results.source);
+
+
 

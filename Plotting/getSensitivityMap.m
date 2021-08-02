@@ -8,8 +8,9 @@ srcs = array(1:nS);
 dets = array(nS+1:end);
 
 %Load PMDFs of the channels of the AD array
-load(fullfile(pathnameHeadModel,'GMSurfaceMesh.mat'));
-ALLPMDFs = readPMDFs(srcs,dets,size(GMSurfaceMesh.node,1),minRho,maxRho,posScalp,pathnameHeadModel);
+pathnameMSHS = getMSHSpath(pathnameHeadModel);
+load(pathnameMSHS,'gmSurfaceMesh','-mat');
+ALLPMDFs = readPMDFs(srcs,dets,size(gmSurfaceMesh.node,1),minRho,maxRho,posScalp,pathnameHeadModel);
 
 if ~exist('PMDFweighting','var')
     PMDFweighting = ones(size(ALLPMDFs));

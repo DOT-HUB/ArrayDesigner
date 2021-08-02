@@ -17,17 +17,18 @@ else
     viewAng = varInputs.view;
 end
 
+pathnameMSHS = getMSHSpath(AD.inputs.pathnameHeadModel);
 %Load HeadModel elements
-load([AD.inputs.pathnameHeadModel '/GMSurfaceMesh.mat']);
-load([AD.inputs.pathnameHeadModel '/ScalpSurfaceMesh.mat']);
-scalpPos = importdata([AD.inputs.pathnameHeadModel '/scalpPos.txt']);
+load(pathnameMSHS,'gmSurfaceMesh','-mat');
+load(pathnameMSHS,'scalpSurfaceMesh','-mat');
+scalpPos = importdata([AD.inputs.pathnameHeadModel '/Utils/scalpSolutionSpace_10_2p5.txt']);
 
 %Unpack
 array = [AD.results.source AD.results.detector];
 nS = AD.inputs.nD;
 nD = AD.inputs.nD;
-nodes = GMSurfaceMesh.node;
-face  = GMSurfaceMesh.face;
+nodes = gmSurfaceMesh.node;
+face  = gmSurfaceMesh.face;
 ROI = loadROI(AD.inputs.pathnameROI);
 sources = AD.results.source;
 detectors = AD.results.detector;
@@ -72,11 +73,11 @@ hold(hAxes,'on');
 
 %Add channels to diagram
 for i = 1:nChannels
-    Hl = line(hAxes,[scalpPos(sources(measList(i,1)),1) scalpPos(detectors(measList(i,2)),1)],[scalpPos(sources(measList(i,1)),2) scalpPos(detectors(measList(i,2)),2)],[scalpPos(sources(measList(i,2)),3) scalpPos(detectors(measList(i,2)),3)],'color','m','LineWidth',2);
+    Hl = line(hAxes,[scalpPos(sources(measList(i,1)),1) scalpPos(detectors(measList(i,2)),1)],[scalpPos(sources(measList(i,1)),2) scalpPos(detectors(measList(i,2)),2)],[scalpPos(sources(measList(i,1)),3) scalpPos(detectors(measList(i,2)),3)],'color','m','LineWidth',2);
 end
 
 %Add scalp
-hPatch = trisurf(ScalpSurfaceMesh.face(:,1:3), ScalpSurfaceMesh.node(:,1), ScalpSurfaceMesh.node(:,2), ScalpSurfaceMesh.node(:,3),'FaceColor','none','FaceAlpha',0,'EdgeColor','k','EdgeAlpha',0.05,'Parent',hAxes);
+hPatch = trisurf(scalpSurfaceMesh.face(:,1:3), scalpSurfaceMesh.node(:,1), scalpSurfaceMesh.node(:,2), scalpSurfaceMesh.node(:,3),'FaceColor','none','FaceAlpha',0,'EdgeColor','k','EdgeAlpha',0.05,'Parent',hAxes);
 
 optodeMarkerSize = 100;
 Hs = scatter3(hAxes,scalpPos(sources,1),scalpPos(sources,2),scalpPos(sources,3),optodeMarkerSize,'MarkerEdgeColor','k','MarkerFaceColor','r');
