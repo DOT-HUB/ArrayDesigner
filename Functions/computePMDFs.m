@@ -1,5 +1,5 @@
 
-function [mshs] = computePMDFs(pathnamePhis,mshs,SDrange,pmdfThresh)
+function [mshs] = computePMDFs(pathnamePhis,pathnameMSHS,SDrange,pmdfThresh)
 
 % This function computes the PMDFs on the GM surface for all possible 10-2.5 combinations
 % within the SDrange and save them as PMDFs.data and PMDFs.idx in the PMDFs folder
@@ -91,6 +91,9 @@ function [mshs] = computePMDFs(pathnamePhis,mshs,SDrange,pmdfThresh)
 
 files = dir(fullfile(pathnamePhis,'*.mat'));
 
+% Load head volume
+mshs = load(pathnameMSHS,'-mat');
+
 phi = [];
 for i = 1:length(files)
     inname = fullfile(pathnamePhis,['Phi_Batch' num2str(i) '.mat']);
@@ -99,26 +102,32 @@ for i = 1:length(files)
 end
 clear phis_tmp
 
-posScalp = mshs.ADSolutionSpace.positions;
+% get AD solution space
+fid = fopen(fullfile(pathnamePhis(1:end-6),'Utils','scalpSolutionSpace_10_2p5.txt'),'r');
+tmp = textscan(fid,'%.6f %.6f %.6f');
+fclose(fid);  
+ADSolutionSpace.positions = [tmp{1} tmp{2} tmp{3}];
+
+posScalp = ADSolutionSpace.positions;
 nposScalp = size(posScalp,1); % number of scalp lattice points
 
 % Downsample GMSurfaceMesh with a factor of 2.5 and save it also as
 % GMpos.txt
-if ~isfield(mshs,'gmSurfaceMeshDownsampled')
-    [mshs.gmSurfaceMeshDownsampled.node,mshs.gmSurfaceMeshDownsampled.face] = remeshsurf(mshs.gmSurfaceMesh.node,mshs.gmSurfaceMesh.face,2.5);
-    
-    % Save as GMpos.txt to be fed to the algorithm
-    fid = fopen(fullfile(pathnamePhis(1:end-6),'GMpos.txt'),'w');
-    for iV = 1:size(mshs.gmSurfaceMeshDownsampled.node,1)
-        fprintf(fid,'%.6f %.6f %.6f \n',mshs.gmSurfaceMeshDownsampled.node(iV,1:3));
-    end
-    fclose(fid); 
-end
+% if ~isfield(mshs,'gmSurfaceMeshDownsampled')
+%     [mshs.gmSurfaceMeshDownsampled.node,mshs.gmSurfaceMeshDownsampled.face] = remeshsurf(mshs.gmSurfaceMesh.node,mshs.gmSurfaceMesh.face,2.5);
+%     
+%     % Save as GMpos.txt to be fed to the algorithm
+%     fid = fopen(fullfile(pathnamePhis(1:end-6),'GMpos.txt'),'w');
+%     for iV = 1:size(mshs.gmSurfaceMeshDownsampled.node,1)
+%         fprintf(fid,'%.6f %.6f %.6f \n',mshs.gmSurfaceMeshDownsampled.node(iV,1:3));
+%     end
+%     fclose(fid); 
+% end
 
 % Compute new vol2gm matrix and nodal volume vector
-if ~isfield(mshs,'vol2gmDownsampled')
-    [mshs.vol2gmDownsampled,GMnodalVol] = vol2gmDirectVol(mshs.headVolumeMesh,mshs.gmSurfaceMeshDownsampled.node);
-end
+% if ~isfield(mshs,'vol2gmDownsampled')
+%     [mshs.vol2gmDownsampled,GMnodalVol] = vol2gmDirectVol(mshs.headVolumeMesh,mshs.gmSurfaceMeshDownsampled.node);
+% end
 
 % fluence distribution = 1 x nposGM.
 phiSurf = mshs.vol2gmDownsampled*phi;
@@ -225,6 +234,9 @@ delete(h1);
 
 mshs.PMDFnormFactor = PMDFnormFactor;
 
+% Save PMDF norm factor
+save(fullfile(pathnamePhis,'PMDFNormFactor.mat'),'PMDFnormFactor');
+
 % Save the PMDFs file in the .data and .idx format
 fid = fopen(fullfile(pathnamePhis,'PMDFs.idx'),'w');
 for iR = 1:size(ALLPMDFs,2)
@@ -266,9 +278,9 @@ delete(fullfile(pathnamePhis,'Phi_*'))
 
 % Save the avNodalVol.txt file
 avNodalVolume = median(GMnodalVol);
-fid = fopen(fullfile(pathnamePhis(1:end-6),'avNodalVol.txt'),'w');
+fid = fopen(fullfile(pathnamePhis(1:end-6),'Utils','avNodalVol.txt'),'w');
 fprintf(fid,'%.15d',avNodalVolume);
-close(fid);
+fclose(fid);
 
 end
 
@@ -291,7 +303,7 @@ count = 1;
 h = waitbar(0,'Calculating vol2gm transform...');
 for n = 1:size(GMNodes,1)
     waitbar(n/size(GMNodes,1));
-    p = GMNodes(n,:);
+    p = GMNodes(n,1:3);
     
     dist = sqrt(sum((p-headVolumeMesh.node(:,1:3)).^2,2));
     [~,idx] = min(dist);
