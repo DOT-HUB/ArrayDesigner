@@ -125,9 +125,8 @@ nposScalp = size(posScalp,1); % number of scalp lattice points
 % end
 
 % Compute new vol2gm matrix and nodal volume vector
-% if ~isfield(mshs,'vol2gmDownsampled')
-%     [mshs.vol2gmDownsampled,GMnodalVol] = vol2gmDirectVol(mshs.headVolumeMesh,mshs.gmSurfaceMeshDownsampled.node);
-% end
+load(fullfile(pathnamePhis(1:end-6),'gmSurfaceMesh.mat'))
+[mshs.vol2gmDownsampled,GMnodalVol] = vol2gmDirectVol(mshs.headVolumeMesh,gmSurfaceMesh.node);
 
 % fluence distribution = 1 x nposGM.
 phiSurf = mshs.vol2gmDownsampled*phi;
