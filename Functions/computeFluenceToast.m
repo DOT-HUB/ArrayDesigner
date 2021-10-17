@@ -26,6 +26,8 @@
 
 function computeFluenceToast(pathnameMSHS,ADSolutionSpacePath,pathnameSave)
 
+disp('COMPUTING FLUENCE DISTRIBUTIONS...');
+
 if ~exist(pathnameSave,'dir')
     mkdir(pathnameSave)
 end

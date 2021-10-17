@@ -88,6 +88,7 @@ function [mshs] = computePMDFs(pathnamePhis,pathnameMSHS,SDrange,pmdfThresh)
 % Dependencies: TOAST, iso2mesh
 %
 
+disp('COMPUTING PMDFs...');
 
 files = dir(fullfile(pathnamePhis,'*.mat'));
 
