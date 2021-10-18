@@ -228,7 +228,7 @@ for ii = 1:nposScalp
     remaining = sum(noskipmat(:));
     done = nposScalp.^2 - remaining;
     
-    fprintf(['Estimated time remaining = ' num2str((t/done)*remaining/60,'%0.1f') ' mins\n'])
+    %fprintf(['Estimated time remaining = ' num2str((t/done)*remaining/60,'%0.1f') ' mins\n'])
 end
 delete(h1);
 
