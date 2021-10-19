@@ -903,32 +903,37 @@ refpts_10_2p5_labels{end+1} = 'POOO6';
 % Create mapping from Ten 2.5 to Ten 5.
 ten2p5_to_ten5 = ismember(refpts_10_2p5_labels,mshs.tenFive.labels);
 
+% Check whether Utils folder exist otherwise create it
+if ~exist(fullfile(pathnameHeadModel,'Utils'),'dir')
+    mkdir(fullfile(pathnameHeadModel,'Utils'));
+end
+
 % Save outputs (elements required by GRASP must be as .txt, otherwise .mat)
-fid = fopen(fullfile(pathnameHeadModel,'/Utils/scalpSolutionSpace_10_2p5.txt'),'w');
+fid = fopen(fullfile(pathnameHeadModel,'Utils','scalpSolutionSpace_10_2p5.txt'),'w');
 for iV = 1:size(refpts_10_2p5,1)
     fprintf(fid,'%.6f %.6f %.6f \n',refpts_10_2p5(iV,:));
 end
 fclose(fid);  
 
-fid = fopen(fullfile(pathnameHeadModel,'/Utils/scalpSolutionSpace_10_2p5_labels.txt'),'w');
+fid = fopen(fullfile(pathnameHeadModel,'Utils','scalpSolutionSpace_10_2p5_labels.txt'),'w');
 for iV = 1:size(refpts_10_2p5_labels,1)
     fprintf(fid,'%s\n',refpts_10_2p5_labels{iV});
 end
 fclose(fid); 
 
-fid = fopen(fullfile(pathnameHeadModel,'/Utils/scalpSolutionSpace_10_5.txt'),'w');
+fid = fopen(fullfile(pathnameHeadModel,'Utils','scalpSolutionSpace_10_5.txt'),'w');
 for iV = 1:size(refpts_10_5,1)
     fprintf(fid,'%.6f %.6f %.6f \n',refpts_10_5(iV,:));
 end
 fclose(fid);  
 
-fid = fopen(fullfile(pathnameHeadModel,'/Utils/scalpSolutionSpace_10_5_labels.txt'),'w');
+fid = fopen(fullfile(pathnameHeadModel,'Utils','scalpSolutionSpace_10_5_labels.txt'),'w');
 for iV = 1:size(refpts_10_5_labels,1)
     fprintf(fid,'%s\n',refpts_10_5_labels{iV});
 end
 fclose(fid); 
 
-save(fullfile(pathnameHeadModel,'/Utils/ten2p5_to_ten5.mat'),'ten2p5_to_ten5');
+save(fullfile(pathnameHeadModel,'Utils','ten2p5_to_ten5.mat'),'ten2p5_to_ten5');
 
 
 

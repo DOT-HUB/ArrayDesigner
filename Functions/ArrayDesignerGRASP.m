@@ -3,10 +3,10 @@ function [AD, readOut] = ArrayDesignerGRASP(AD)
 %Book-keeping / unpacking for brevity
 pathnameAD = AD.inputs.pathnameAD;
 pathnameROI = AD.inputs.pathnameROI;
-pathnameSolSpace = fullfile(AD.inputs.pathnameHeadModel,'/Utils/scalpSolutionSpace_10_2p5.txt');
-pathnameSolSpaceLabels = fullfile(AD.inputs.pathnameHeadModel,'/Utils/scalpSolutionSpace_10_2p5_labels.txt');
-pathnameGMPos = fullfile(AD.inputs.pathnameHeadModel,'/Utils/gmPos.txt');
-pathnameAvNodalVol = fullfile(AD.inputs.pathnameHeadModel,'/Utils/avNodalVol.txt');
+pathnameSolSpace = fullfile(AD.inputs.pathnameHeadModel,'Utils','scalpSolutionSpace_10_2p5.txt');
+pathnameSolSpaceLabels = fullfile(AD.inputs.pathnameHeadModel,'Utils','scalpSolutionSpace_10_2p5_labels.txt');
+pathnameGMPos = fullfile(AD.inputs.pathnameHeadModel,'Utils','gmPos.txt');
+pathnameAvNodalVol = fullfile(AD.inputs.pathnameHeadModel,'Utils','avNodalVol.txt');
 pathnamePMDFidx = fullfile(AD.inputs.pathnameHeadModel,'PMDFs','PMDFs.idx');
 pathnamePMDF = fullfile(AD.inputs.pathnameHeadModel,'PMDFs','PMDFs.data');
 pathnameResults = fullfile(AD.inputs.pathnameOutput,'results.txt');
@@ -33,6 +33,9 @@ if isunix
     [~,readOut] = system([optLocation ' ' pathnameSolSpace ' ' pathnameGMPos ' ' pathnamePMDFidx ' ' pathnamePMDF ' ' pathnameWeights ' ' pathnameROI ' ' num2str(AD.inputs.nS) ' ' num2str(AD.inputs.nD) ' ' num2str(AD.inputs.minRhoOpt) ' ' num2str(coverageThresh) ' ' num2str(AD.inputs.coverageWeight) ' ' pathnameResults]);
 else
     %windows call
+    optLocation = fullfile(pathnameAD,'nirsCPPMacLinux','build','nirsmain.exe');
+    %cd(optLocation);
+    [~,readOut] = system([optLocation ' ' pathnameSolSpace ' ' pathnameGMPos ' ' pathnamePMDFidx ' ' pathnamePMDF ' ' pathnameWeights ' ' pathnameROI ' ' num2str(AD.inputs.nS) ' ' num2str(AD.inputs.nD) ' ' num2str(AD.inputs.minRhoOpt) ' ' num2str(coverageThresh) ' ' num2str(AD.inputs.coverageWeight) ' ' pathnameResults]);
 end
 runtime = toc;
 

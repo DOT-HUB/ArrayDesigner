@@ -15,19 +15,27 @@ function [pathnameWeights] = getPMDFWeights(maxGoodRho,maxRho,pathnameHeadModel)
 
 %%
 [~,HeadModelName,~] = fileparts(pathnameHeadModel);
-pathnameWeights = [pathnameHeadModel '/PMDFweightings/' 'PMDFweighting_' num2str(maxGoodRho) '-' num2str(maxRho) 'mm_' HeadModelName '.txt'];
+pathnameWeights = fullfile(pathnameHeadModel,'PMDFweightings',['PMDFweighting_' num2str(maxGoodRho) '-' num2str(maxRho) 'mm_' HeadModelName '.txt']);
+
+if ~exist(fullfile(pathnameHeadModel,'PMDFweightings'),'dir')
+    mkdir(fullfile(pathnameHeadModel,'PMDFweightings'));
+end
 
 if ~isfile(pathnameWeights)
     disp('Producing PDMF weights file');
     % Load PMDF Maxima
     % PMDFMaxima = load([pathnameHeadModel '/PMDFMaxima.txt']);
     %% TEMPORARY hack until PMDF filetypes are sorted.
-    load('/Users/RCooper/Dropbox/Projects/Array_Designer/Fluence_Preprocessing/DS/ALLPMDFs_DF_2_5_ToastCorrect.mat','PMDFnormFactor');
+    %load('/Users/RCooper/Dropbox/Projects/Array_Designer/Fluence_Preprocessing/DS/ALLPMDFs_DF_2_5_ToastCorrect.mat','PMDFnormFactor');
+    load(fullfile(pathnameHeadModel,'PMDFs','PMDFNormFactor.mat'))
     PMDFMaxima = PMDFnormFactor; clear PMDFnormFactor
     %%
     
     % Load Scalp Pos
-    scalpPos = load([pathnameHeadModel '/scalpPos.txt']);
+    fid = fopen(fullfile(pathnameHeadModel,'Utils','scalpSolutionSpace_10_2p5.txt'),'r');
+    tmp = textscan(fid,'%f %f %f');
+    fclose(fid);
+    scalpPos = [tmp{1} tmp{2} tmp{3}];
     nScalpPos = size(scalpPos,1);
     
     %Create distMAT
@@ -114,10 +122,10 @@ if ~isfile(pathnameWeights)
             end
             
             % Add by SB to remove points on SD=0 in the figure;
-            if dist == 0
-                PMDF_MASKfit(ii,jj) = NaN;
-                PMDF_MASK(ii,jj) = NaN;
-            end
+% %             if dist == 0
+% %                 PMDF_MASKfit(ii,jj) = NaN;
+% %                 PMDF_MASK(ii,jj) = NaN;
+% %             end
         end
     end
     delete(wb)
