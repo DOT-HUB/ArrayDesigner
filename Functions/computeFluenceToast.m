@@ -24,11 +24,22 @@
 % Dependencies: TOAST
 %
 
-function computeFluenceToast(headVolumeMesh,landmarks,ADSolutionSpace,optProp,pathnameSave)
+function computeFluenceToast(pathnameMSHS,ADSolutionSpacePath,pathnameSave)
+
+disp('COMPUTING FLUENCE DISTRIBUTIONS...');
 
 if ~exist(pathnameSave,'dir')
     mkdir(pathnameSave)
 end
+
+% Load head volume
+load(pathnameMSHS,'-mat');
+
+% get AD solution space
+fid = fopen(fullfile(ADSolutionSpacePath,'Utils','scalpSolutionSpace_10_2p5.txt'),'r');
+tmp = textscan(fid,'%.6f %.6f %.6f');
+fclose(fid);  
+ADSolutionSpace.positions = [tmp{1} tmp{2} tmp{3}];
 
 % Create toast mesh
 eltp = ones(length(headVolumeMesh.elem),1)*3;
@@ -40,17 +51,35 @@ n_tissue = length(unique(headVolumeMesh.elem(:,5)));
 
 % Optical properties 
 c0 = 0.3;   % speed of light in vacuum
-refind = optProp(1).prop(4); % homogeneous refractive index
+nWavs = 1;
+
+% First assign
 mua = ones(nNodes,1);
 mus = ones(nNodes,1);
-ref = ones(nNodes,1)*refind;
+ref = ones(nNodes,1);
+
+% Determine tissue optical properties and populate vectors
+for tiss = 1:n_tissue
+    tmpInd = find(strcmpi({'scalp','skull','ECT','CSF','GM','WM'},headVolumeMesh.labels{tiss}), 1);
+    if isempty(tmpInd)
+        error('Unknown tissue label, please correct rmap.headVolumeMesh.labels and try again');
+    end
+    tissueNodeList = headVolumeMesh.node(:,4)==tiss;
+    for wav = 1:nWavs
+        [muaT, musPrimeT, refIndT] = DOTHUB_getTissueCoeffs(headVolumeMesh.labels{tiss},800);%Potentially update this to be age-specific?
+        mua(tissueNodeList,1) = muaT;
+        mus(tissueNodeList,1) = musPrimeT;
+        ref(tissueNodeList,1) = refIndT;
+    end
+end
+
 c_medium = c0./ref;
 
 % Create mus and mua vectors
-for i_t = 1:n_tissue
-    mua(headVolumeMesh.node(:,4)==i_t,1) = optProp(i_t).prop(3);
-    mus(headVolumeMesh.node(:,4)==i_t,1) = optProp(i_t).prop(1).*(1-optProp(i_t).prop(2));
-end
+% % for i_t = 1:n_tissue
+% %     mua(headVolumeMesh.node(:,4)==i_t,1) = optProp(i_t).prop(3);
+% %     mus(headVolumeMesh.node(:,4)==i_t,1) = optProp(i_t).prop(1).*(1-optProp(i_t).prop(2));
+% % end
 
 % Calcualte boundary mismatch factors
 theta_c = asin(1./ref(1));
@@ -71,7 +100,7 @@ S = K+M+F;
 clear K F M
 
 %Loop around ADSolutionSpace positions as sourcepos and save every 100
-measpos = landmarks(1,:); % Use Nasion as measpos, this shouldn't matter;
+measpos = ADSolutionSpace.positions(1,:); % Use Nasion as measpos, this shouldn't matter; SB: changed to first pos
 count = 1;
 batchsize = 100;
 for i = 1:batchsize:size(ADSolutionSpace.positions,1)
