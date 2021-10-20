@@ -86,21 +86,21 @@ if ~isfile(pathnameWeights)
     PMDFMASK_toplot = log10(PMDF_MASK(m));
     p = polyfit(distMat_toplot,PMDFMASK_toplot,1);
     
-    f1 = figure;
-    subplot(1,2,1);
-    scatter(distMat_toplot,PMDFMASK_toplot);xlim([0 60]);
-    hold on;
-    plot(maxGoodRho:maxRho,[maxGoodRho:maxRho].*p(1) + p(2),'LineWidth',2);
-    xlabel('SD Distance (mm)','FontSize',14);
-    ylabel('Log10(weighting)','FontSize',14);
-    legend('Raw relative PMDF norms','Linear Fit');
-    set(gca,'FontSize',14);
+    %f1 = figure;
+    %subplot(1,2,1);
+    %scatter(distMat_toplot,PMDFMASK_toplot);xlim([0 60]);
+    %hold on;
+    %plot(maxGoodRho:maxRho,[maxGoodRho:maxRho].*p(1) + p(2),'LineWidth',2);
+    %xlabel('SD Distance (mm)','FontSize',14);
+    %ylabel('Log10(weighting)','FontSize',14);
+    %legend('Raw relative PMDF norms','Linear Fit');
+    %set(gca,'FontSize',14);
     %fprintf(['Gradient = ' num2str(p(1)) '\n']);
     
     %Create weighting from fit;
     %Now, mask and weight PMDFs appropriately
-    PMDF_MASKfit = ones(nScalpPos);
-    PMDF_MASKfit(1:nScalpPos+1:end) = 0; %Diagonal values zero;
+    %PMDF_MASKfit = ones(nScalpPos);
+    %PMDF_MASKfit(1:nScalpPos+1:end) = 0; %Diagonal values zero;
     wb = waitbar(0,'Computing fitted weightings...');
     for ii = 1:nScalpPos
         waitbar(ii/nScalpPos,wb);
@@ -131,15 +131,15 @@ if ~isfile(pathnameWeights)
     delete(wb)
     
     %Compare functions;
-    figure(f1);
-    subplot(1,2,2);
-    scatter(distMat(:),PMDF_MASK(:));xlim([0 60]);hold on;
-    scatter(distMat(:),PMDF_MASKfit(:));xlim([0 60]);
-    ylabel('SNR weighting factor','FontSize',14);
-    xlabel('Source-detector distance [mm]','FontSize',14);
-    set(gca,'FontSize',14);
-    set(gcf,'PaperPositionMode','auto','Position',[560 483 733 465])
-    drawnow;
+    %figure(f1);
+    %subplot(1,2,2);
+    %scatter(distMat(:),PMDF_MASK(:));xlim([0 60]);hold on;
+    %scatter(distMat(:),PMDF_MASKfit(:));xlim([0 60]);
+    %ylabel('SNR weighting factor','FontSize',14);
+    %xlabel('Source-detector distance [mm]','FontSize',14);
+    %set(gca,'FontSize',14);
+    %set(gcf,'PaperPositionMode','auto','Position',[560 483 733 465])
+    %drawnow;
     
     %% Save out
     disp(['Writing PMDF weighting file to ' pathnameWeights '...']);
