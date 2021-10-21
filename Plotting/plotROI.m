@@ -39,6 +39,8 @@ else
 end
 if isempty(varInputs.view)
     viewAng = [0 90];
+else
+    viewAng = varInputs.view;
 end
 
 if isstr(pathnameROI)

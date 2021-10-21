@@ -1,6 +1,6 @@
 function hAxis = plotParcellation(pathnameHeadModel,parcellationNumber,varargin)
 
-%This function plots an Array Designer ROI on the GM surface mesh
+%This function plots a parcellation on the GM surface mesh
 %
 %############################### INPUTS ###################################
 %
@@ -37,16 +37,26 @@ else
 end
 if isempty(varInputs.view)
     viewAng = [0 90];
+else
+    viewAng = varInputs.view;
 end
 
 if ~isempty(pathnameHeadModel)
     if isstr(pathnameHeadModel)
-        load([pathnameHeadModel '/GMSurfaceMesh.mat']);
+        pathnameMSHS = getMSHSpath(pathnameHeadModel);
+        load(pathnameMSHS);
+        GMSurfaceMesh = gmSurfaceMesh;
     else
         GMSurfaceMesh = pathnameHeadModel;
     end
 else
-    error('Please specify HeadModel (2nd input)');
+    error('Please specify HeadModel');
+end
+
+if ~isfield(GMSurfaceMesh,'parcellation')
+    return
+elseif isempty(GMSurfaceMesh.parcellation)
+        return
 end
 
 % Reorg

@@ -22,7 +22,7 @@ if ~exist(fullfile(pathnameHeadModel,'PMDFweightings'),'dir')
 end
 
 if ~isfile(pathnameWeights)
-    disp('Producing PDMF weights file');
+    disp('Producing PDMF weights file for selected source-detector separation setttings');
     % Load PMDF Maxima
     % PMDFMaxima = load([pathnameHeadModel '/PMDFMaxima.txt']);
     %% TEMPORARY hack until PMDF filetypes are sorted.

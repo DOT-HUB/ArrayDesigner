@@ -254,7 +254,7 @@ for iR = 1:size(ALLPMDFs,2)
 end
 fclose(fid);
 
-h1 = waitbar(0,'Saving PMDFs...');
+h1 = waitbar(0,'Saving PMDFs to disk (this bit is slow!)...');
 fid = fopen(fullfile(pathnamePhis,'PMDFs.data'),'w');
 for iR = 1:size(ALLPMDFs,2)
     waitbar(iR/size(ALLPMDFs,2),h1)
