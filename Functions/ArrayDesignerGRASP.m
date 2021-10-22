@@ -29,11 +29,11 @@ AD.inputs.coverageThresh = coverageThresh;
 %% Run GRASP
 tic
 if isunix
-    optLocation = fullfile(pathnameAD,'nirsCPPMacLinux','build','nirsmain');
+    optLocation = fullfile(pathnameAD,'build','nirsmain');
     [~,readOut] = system([optLocation ' ' pathnameSolSpace ' ' pathnameGMPos ' ' pathnamePMDFidx ' ' pathnamePMDF ' ' pathnameWeights ' ' pathnameROI ' ' num2str(AD.inputs.nS) ' ' num2str(AD.inputs.nD) ' ' num2str(AD.inputs.minRhoOpt) ' ' num2str(coverageThresh) ' ' num2str(AD.inputs.coverageWeight) ' ' pathnameResults]);
 else
     %windows call
-    optLocation = fullfile(pathnameAD,'nirsCPPMacLinux','build','nirsmain.exe');
+    optLocation = fullfile(pathnameAD,'build','nirsmain.exe');
     %cd(optLocation);
     [~,readOut] = system([optLocation ' ' pathnameSolSpace ' ' pathnameGMPos ' ' pathnamePMDFidx ' ' pathnamePMDF ' ' pathnameWeights ' ' pathnameROI ' ' num2str(AD.inputs.nS) ' ' num2str(AD.inputs.nD) ' ' num2str(AD.inputs.minRhoOpt) ' ' num2str(coverageThresh) ' ' num2str(AD.inputs.coverageWeight) ' ' pathnameResults]);
 end

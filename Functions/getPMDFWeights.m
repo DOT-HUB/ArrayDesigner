@@ -146,6 +146,6 @@ if ~isfile(pathnameWeights)
     writematrix(PMDF_MASKfit,pathnameWeights,'delimiter','\t');
     
 else
-    disp(['PDMF weights file found: ' pathnameWeights ', loading...']);
+    %disp(['PDMF weights file found: ' pathnameWeights ', loading...']);
 end
 
