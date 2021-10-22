@@ -1,11 +1,14 @@
 # Array Designer #
-
 ### Created by Dr. Rob Cooper and Dr. Sabrina Brigadoi ###
 
-### Introduction ###:
-This repository is a set of GUIs and scripts that create an easy-to-use environment to run the automated fNIRS array design methodology described by Brigadoi et al. in the paper:
+#########################################################
+If you use any of these tools please cite:
 
 Sabrina Brigadoi, Domenico Salvagnin, Matteo Fischetti, Robert J. Cooper, "Array Designer: automated optimized array design for functional near-infrared spectroscopy," Neurophotonics 5(3) 035010 (13 September 2018) https://doi.org/10.1117/1.NPh.5.3.035010
+#########################################################
+
+### Introduction ###:
+This repository is a set of GUIs and scripts that create an easy-to-use environment to run the automated fNIRS array design methodology described by Brigadoi et al. in the paper listed above.
 
 The repository consists of two matlab apps (ArrayDesignerAPP and ROIBuilderAPP) and a range of directories containing associated scripts and data.
 
