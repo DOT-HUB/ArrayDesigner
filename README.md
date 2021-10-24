@@ -14,6 +14,18 @@ The repository consists of two matlab apps (ArrayDesignerAPP and ROIBuilderAPP) 
 
 The basic premise of ArrayDesigner (AD) is that a user can select the areas of a cortical mesh model they wish to target with their fNIRS array, then input parameters associated with their hardware (e.g. number of source and detector locations) and AD will automatically generate optimised positions for those sources and detectors on the scalp (in the 10-5 or 10-2.5 system) to maximise the sensitivity (or sensitivity and coverage) to/of that target cortical area.
 
+### Installation ###:
+
+1) To run Array Designer you need Matlab - ideally 2019b or later. Depending on the version you download, you will obtain a main directory ("ArrayDesigner") containing several subdirectories and .mlapp files. This entire directory simply needs to be added to you matlab path.
+
+2) If you downloaded a separate PMDFs.data file, this needs to be placed within the directory of AD's default head model at: ArrayDesigner/HeadModels/MNI152_Symmetric/PMDFs/PMDFs.data
+
+3) If you are using a Mac, you will need to bypass the security settings that prevent the running programs from unknown sources. In the Finder on your Mac, locate the ArrayDesigner/Build/nirsmain file. Control-click the app icon, then choose Open from the shortcut menu. This won't run properly, but the app will be saved as an exception to your security settings, and ArrayDesigner will then be able to ope it when it needs it.
+
+4) If you want to use a different head model to the default (which we encourage you to try!) you will need TOAST++ downloaded and in your matlab path.(http://web4.cs.ucl.ac.uk/research/vis/toast/).
+
+
+
 ### ArrayDesignerAPP ###:
 The main app is arranged in hierarchical/logical order from top to bottom. In order of operation, users should
 1) Select a head model in which to operate
