@@ -8,5 +8,4 @@ Thumbs.db
 *.swp
 *~
 *.data
-!/HeadModels/MNI152_Symmetric/PMDFs.data
 Results
