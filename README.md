@@ -24,10 +24,8 @@ The basic premise of ArrayDesigner (AD) is that a user can select the areas of a
 
 4) If you want to use a different head model to the default (which we encourage you to try!) you will need TOAST++ downloaded and in your matlab path.(http://web4.cs.ucl.ac.uk/research/vis/toast/).
 
-
-
 ### ArrayDesignerAPP ###:
-The main app is arranged in hierarchical/logical order from top to bottom. In order of operation, users should
+To run ArrayDesignerApp.mlapp just double click on it. Note if you double click on it via matlab, the App Designer interface will open - you will need to click 'Run' to run it. The main app GUI is arranged in hierarchical/logical order from top to bottom. In order of operation, users should
 1) Select a head model in which to operate
 2) Select an ROI to target
 3) Select a solution space (10-5 or 10-2.5 (default))
@@ -37,9 +35,9 @@ The main app is arranged in hierarchical/logical order from top to bottom. In or
 7) RUN ARRAY DESIGNER
 
 Details:
-On (1) - The head models are stored in the AD repo /HeadModels. Each model has a directory. Two adult atlas head models are provided with AD. MNI_Symmetric and MNI_Asymmetric. The model itself is a .mshs format (which is just a matlab .mat) as described in the DOT-HUB toolbox. It contains a volume and GM surface mesh and various other variables. AD can work with any head model in this format, so if you want to move beyond the atlases provided, all you need to do is create a .mshs file for your head meshes, save it in AD/HeadModels/ and load it. Note that we haven't had much time to test this yet, but there is no reason it should not work. Note that GM surfaces should be relatively sparse (circa 10,000 nodes) to maintain speed. 
+On (1) - The default head model is based on the the MNI152 symmetric atlas. This and any other head models are stored in the AD repo /HeadModels. Each model has a directory, within which is a .mshs file. The .mshs format (which is just a matlab .mat) is described in the DOT-HUB toolbox. It contains a volume and GM surface mesh and various other variables. AD can work with any head model in the .mshs format, so if you want to move beyond the atlases provided, all you need to do is create a .mshs file for your head meshes, save it in the appropriate folder (e.g. AD/HeadModels/myMesh/myMesh.mshs) and load it. Note that we haven't had much time to test this yet, but there is no reason it should not work. Note that GM surfaces should be relatively sparse (circa 10,000 nodes) to maintain speed, and parcellations of the GM surface (included in the variable structure gmSurfaceMesh.parcellation) are useful for building ROIs.
 
-Within the HeadModels folder for the MNI_Symmetric model (which should be considered the default for AD) are various other things used by AD including /PMDFs/PMDFs.data. This is a large (~1Gb) binary containing all possible PMDFs for the 10-2.5 solution space for the MNI_Symmetric model. This allows you to use this model without calculating PMDFs yourself. If you select the MNI_Asymmetric model, you will have to calculate the PMDFs locally. (We didn't want to include 2x1Gb binary files in the release, but the asylum model is the one used in the paper, so we thought it important to include it - the ROIs from the paper are also in that folder). To calculate PMDFs, you will need to have TOAST++ installed.
+Within the HeadModels folder for the MNI_Symmetric model (which is the default for AD) are various other things used by AD including /PMDFs/PMDFs.data. This is a large (~1Gb) binary containing all possible PMDFs for the 10-2.5 solution space for the MNI_Symmetric model. This allows users to run AD using the default head model without having to calculating PMDFs themselves. If you select the MNI_Asymmetric model (or any other), you will have to calculate the PMDFs locally. (We didn't want to include 2x1Gb binary files in the release, but the asymmetric model is the one used in the paper, so we thought it important to include it - the ROIs from the paper are also in that folder). AD does let you calculate PMDFs, and the process should be straightforward (if a little time consuming), but you will need to have TOAST++ installed.
 
 On (2) - The ROI is a .txt file that represents the locations on the selected head model's GM surface mesh that you wish to target with your array. The ROIs should be saved in the relevant head model folder in a subdirectory named 'ROIs' (e.g. HeadModels/MNI_Symmetric/ROIs/myROI.txt). To make an ROI, go to the Tools menu, and open ROIbuilder.
 
@@ -48,7 +46,6 @@ On (5) - The objective function that Array Designers uses is essentially = [tota
 On (6) All these parameters are as defined in the paper, but they should hopefully be self explanatory.
 
 Note that the inputs and results of a run of AD are saved as .AD files in /Results whenever you run Array Designer. You can load prior .AD files to save you having to re-enter the same information again etc.
-
 
 
 ### ROIBuilderAPP ###:
